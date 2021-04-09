@@ -1,0 +1,26 @@
+version: '3'
+services:
+    database:
+        image: mongo
+        ports:
+            - 27017:27017
+    backend:
+        build:
+            context: ./backend
+        ports:
+            - 3000:3000
+        volumes:
+            - ./backend:/backend
+            - /backend/node_modules
+        depends_on:
+            - database
+    frontend:
+        build:
+            context: ./frontend
+        ports:
+            - 8080:8080
+        volumes:
+            - ./frontend:/frontend
+            - /frontend/node_modules
+        depends_on:
+            - backend
