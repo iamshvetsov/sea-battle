@@ -1,5 +1,5 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { SeaBattle } from './SeaBattle';
+import { SeaBattleApp } from './SeaBattle';
 
-render(<SeaBattle />, document.getElementById('root'));
+render(<SeaBattleApp />, document.getElementById('root'));

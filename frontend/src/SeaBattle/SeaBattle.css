@@ -1,0 +1,81 @@
+:global(#root) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #eee;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.seaBattleApp {
+    display: flex;
+    justify-content: space-around;
+    width: 75%;
+}
+
+.seaBattleGrid {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.grid {
+    position: relative;
+}
+
+.canvas {
+    width: 300px;
+    height: 300px;
+    box-shadow: 0 0 0 1px #000;
+    background-color: #eee;
+    cursor: crosshair;
+}
+
+.yoursCanvas {
+    cursor: default;
+}
+
+.letterCoords {
+    display: flex;
+    margin-bottom: 5px;
+}
+
+.letterCoord {
+    width: 30px;
+    text-align: center;
+}
+
+.numberCoords {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 30px;
+    left: -30px;
+}
+
+.numberCoord {
+    height: 30px;
+    text-align: right;
+}
+
+.generateBtnLabel,
+.startGameBtnLabel {
+    display: inline-flex;
+    margin-top: 10px;
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+    user-select: none;
+}
+
+.generateBtnLabel:hover {
+    border-bottom-color: #000;
+}
+
+.startGameBtnLabel {
+    border-bottom: 2px solid #000;
+}
