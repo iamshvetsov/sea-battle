@@ -13,19 +13,19 @@ import { BelongsTo, GridProps, CellArgs } from '../types';
 import css from './SeaBattle.css';
 
 export const Grid = ({
+    socket,
+    playerIsActive,
     belongsTo,
     size,
     cellCount,
     cellSize,
     coords,
     ships,
-    finishGame,
     gameIsFinished
 }: GridProps): ReactElement => {
     const canvasRef: RefObject<HTMLCanvasElement> = useRef<HTMLCanvasElement | null>(null);
     let context: CanvasRenderingContext2D;
 
-    const [previousShips, setPreviousShips] = useState<CellArgs[][]>(ships);
     const [sunkenShips, setSunkenShips] = useState<CellArgs[]>([]);
     const [pastCells, setPastCells] = useState<CellArgs[]>([]);
 
@@ -35,30 +35,49 @@ export const Grid = ({
     }, []);
 
     useEffect(() => {
-        if (belongsTo === BelongsTo.Theirs && !cellSetsIsEqual(ships.flat(), previousShips.flat())) {
-            setPreviousShips(ships);
+        if (belongsTo === BelongsTo.Theirs) return;
+
+        if (gameIsFinished) {
             setSunkenShips([]);
             setPastCells([]);
+
+            return;
         }
 
+        socket.on('another-player-did-step', (cell: CellArgs) => {
+            if (cellIsEngaged({ cell, engagedCells: ships.flat() })) {
+                setSunkenShips((prevSunkenShips) => [...prevSunkenShips, cell]);
+            } else {
+                setPastCells((prevPastCells) => [...prevPastCells, cell]);
+            }
+        });
+
+        return () => {
+            socket.off('another-player-did-step');
+        };
+    }, [socket, belongsTo, ships, gameIsFinished]);
+
+    useEffect(() => {
         context = canvasRef.current.getContext('2d');
         drawGrid(context);
-        belongsTo === BelongsTo.Theirs && !gameIsFinished && canvasRef.current.addEventListener('click', clickHandler);
+        belongsTo === BelongsTo.Theirs && playerIsActive && canvasRef.current.addEventListener('click', clickHandler);
 
-        return () => canvasRef.current.removeEventListener('click', clickHandler);
-    }, [gameIsFinished, ships, sunkenShips, pastCells]);
+        return () => canvasRef?.current?.removeEventListener('click', clickHandler);
+    }, [socket, playerIsActive, belongsTo, ships, sunkenShips, pastCells]);
 
-    const clickHandler = ({ layerX, layerY }: any): void => {
+    const clickHandler = async ({ layerX, layerY }: any): Promise<void> => {
         const cell: CellArgs = {
             x: Math.ceil(layerX / cellSize),
             y: Math.ceil(layerY / cellSize)
         };
 
         if (cellIsEngaged({ cell, engagedCells: ships.flat() })) {
+            if (cellIsEngaged({ cell, engagedCells: sunkenShips })) return;
+
             const ship: CellArgs[] = ships.find((ship: CellArgs[]) =>
                 ship.find(({ x, y }: CellArgs) => cell.x === x && cell.y === y));
             const newSunkenShips: CellArgs[] = [...sunkenShips, cell];
-            const engagedCells = ship.every((shipCell: CellArgs) => newSunkenShips.find(
+            const engagedCells: CellArgs[] = ship.every((shipCell: CellArgs) => newSunkenShips.find(
                 (sunkenShip: CellArgs) => shipCell.x === sunkenShip.x && shipCell.y === sunkenShip.y))
                     ? getEngagedCellsAroundShip({ ship, engagedCells: [...pastCells, ...ship], cellCount })
                     : getEngagedCellsAroundCell({ cell, engagedCells: pastCells, cellCount });
@@ -67,11 +86,16 @@ export const Grid = ({
             setPastCells((prevPastCells) => [...prevPastCells, ...engagedCells]);
 
             if (cellSetsIsEqual(ships.flat(), newSunkenShips)) {
-                finishGame();
+                await socket.emit('player-finish-game');
             }
         } else {
+            if (cellIsEngaged({ cell, engagedCells: pastCells })) return;
+
             setPastCells((prevPastCells) => [...prevPastCells, cell]);
+            await socket.emit('changeover-active-player');
         }
+
+        await socket.emit('player-did-step', cell);
     };
 
     const drawGrid = (context: CanvasRenderingContext2D): void => {

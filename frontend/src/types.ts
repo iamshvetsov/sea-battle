@@ -1,3 +1,5 @@
+import { Socket } from 'socket.io-client';
+
 export enum BelongsTo {
     Yours = 'Yours',
     Theirs = 'Theirs'
@@ -18,13 +20,14 @@ export enum DirectionsOfGeneration {
 }
 
 export type GridProps = {
+    socket: Socket;
+    playerIsActive: boolean;
     belongsTo: BelongsTo;
     size: number;
     cellCount: number;
     cellSize: number;
     coords: GeneratedCoords;
     ships: CellArgs[][];
-    finishGame: () => void;
     gameIsFinished: boolean;
 };
 
@@ -84,4 +87,12 @@ export type GenerateShipsLayoutArgs = {
 
 export type DrawShipsArgs = ContextArgs & {
     ships: CellArgs[][];
+};
+
+export type DrawSunkenShipsArgs = ContextArgs & {
+    sunkenShips: CellArgs[];
+};
+
+export type DrawPastCellsArgs = ContextArgs & {
+    pastCells: CellArgs[];
 };

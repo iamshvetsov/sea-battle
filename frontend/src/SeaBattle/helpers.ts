@@ -10,7 +10,9 @@ import {
     GetEngagedCellsAroundCellArgs,
     GetEngagedCellsAroundShipArgs,
     GenerateShipsLayoutArgs,
-    DrawShipsArgs
+    DrawShipsArgs,
+    DrawSunkenShipsArgs,
+    DrawPastCellsArgs
 } from '../types';
 
 const drawCell = ({ context, cellSize, x, y }: DrawCellArgs): void => {
@@ -274,7 +276,7 @@ export const drawShips = ({ context, cellSize, ships }: DrawShipsArgs): void => 
     ships.flat().forEach(({ x, y }: CellArgs) => fillCell({ context, cellSize, x, y }));
 };
 
-export const drawSunkenShips = ({ context, cellSize, sunkenShips }: any): void => {
+export const drawSunkenShips = ({ context, cellSize, sunkenShips }: DrawSunkenShipsArgs): void => {
     sunkenShips.forEach(({ x, y }: CellArgs) => {
         fillCell({ context, cellSize, x, y });
 
@@ -287,7 +289,7 @@ export const drawSunkenShips = ({ context, cellSize, sunkenShips }: any): void =
     });
 };
 
-export const drawPastCells = ({ context, cellSize, pastCells }: any): void => {
+export const drawPastCells = ({ context, cellSize, pastCells }: DrawPastCellsArgs): void => {
     pastCells.forEach(({ x, y }: CellArgs) => {
         context.beginPath();
         context.arc(x * cellSize - cellSize / 2, y * cellSize - cellSize / 2, 2, 0, 2 * Math.PI);

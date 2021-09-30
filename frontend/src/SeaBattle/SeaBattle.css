@@ -63,13 +63,28 @@
     text-align: right;
 }
 
+.gridActionBar,
+.gridHintBar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    font-size: 15px;
+}
+
+.gridActionBar {
+    flex-direction: column;
+}
+
 .generateBtnLabel,
 .startGameBtnLabel {
-    display: inline-flex;
     margin-top: 10px;
-    border-bottom: 1px solid transparent;
     cursor: pointer;
     user-select: none;
+}
+
+.generateBtnLabel {
+    border-bottom: 1px solid transparent;
 }
 
 .generateBtnLabel:hover {
@@ -78,4 +93,24 @@
 
 .startGameBtnLabel {
     border-bottom: 2px solid #000;
+}
+
+.loader {
+    width: 15px;
+    height: 15px;
+    margin-right: 15px;
+    border: 2px solid #eee;
+    border-top: 2px solid #000;
+    border-right: 2px solid #000;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
