@@ -1,2 +1,2 @@
-FROM node:alpine
+FROM node:16-alpine
 WORKDIR /backend

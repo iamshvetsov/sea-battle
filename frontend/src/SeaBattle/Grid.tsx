@@ -65,10 +65,10 @@ export const Grid = ({
         return () => canvasRef?.current?.removeEventListener('click', clickHandler);
     }, [socket, playerIsActive, belongsTo, ships, sunkenShips, pastCells]);
 
-    const clickHandler = async ({ layerX, layerY }: any): Promise<void> => {
+    const clickHandler = async ({ offsetX, offsetY }: any): Promise<void> => {
         const cell: CellArgs = {
-            x: Math.ceil(layerX / cellSize),
-            y: Math.ceil(layerY / cellSize)
+            x: Math.ceil(offsetX / cellSize),
+            y: Math.ceil(offsetY / cellSize)
         };
 
         if (cellIsEngaged({ cell, engagedCells: ships.flat() })) {
